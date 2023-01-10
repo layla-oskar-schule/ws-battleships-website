@@ -1,5 +1,4 @@
 import { createContext, useState } from 'react';
-import GameState from '../../game/GameState';
 import AskBoatLocationComponent from './components/AskBoatLocationComponent';
 import AskGameNameComponent from './components/AskGameNameComponent';
 import AskUserNameComponent from './components/AskUserNameComponent';
@@ -34,7 +33,7 @@ const Play = () => {
 			const boatLength: number = parseInt(event.data.split('$')[1]);
 
 			setDisplayedComponent(
-				<AskBoatLocationComponent onClick={handleBoatLocation} />,
+				<AskBoatLocationComponent boatLength={boatLength} onClick={handleBoatLocation} />,
 			);
 		}
 
@@ -55,34 +54,12 @@ const Play = () => {
 		socket.send('p_sendGameName$' + value);
 	};
 
-	const handleBoatLocation = (x: string, y: number) => {
-		socket.send();
-	};
-
-	const getCurrComponent = (gameState: GameState) => {
-		switch (gameState) {
-			case 'askUserName':
-				return;
-			case 'askGameName':
-			case 'askBoatLocation':
-				return <AskBoatLocationComponent boatLength={} />;
-			case 'askFireLocation':
-				<div>
-					<h1>Shoot at enemy</h1>
-					<div className="gameFieldsContainer">
-						{gameFields.map((gameField, index) => (
-							<GameField data={gameField} key={index} />
-						))}
-					</div>
-				</div>;
-				break;
-			default:
-			case 'waiting':
-		}
+	const handleBoatLocation = (x1: string, y1: number, x2: string, y2: number) => {
+		socket.send('p_sendBoatLocation$["' + x1 + ';' + y1 + '","' + x2 + ';' + y2 + '"]');
 	};
 
 	return (
-		<GameFieldContext.Provider value={gameFields}></GameFieldContext.Provider>
+		<GameFieldContext.Provider value={gameFields}>{displayedComponent}</GameFieldContext.Provider>
 	);
 };
 export default Play;
